@@ -5,7 +5,7 @@ const bodyParser = require("body-parser");
 
 const app = express();
 
-var items = [];
+var items = ["Ride Bike", "Program", "Make Dinner"];
 
 app.set("view engine", "ejs");
 
