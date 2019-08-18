@@ -7,9 +7,14 @@ const app = express();
 
 let items = ["Ride Bike", "Program", "Make Dinner"];
 
+//add a separte data store for work list
+let workItems = [];
+
 app.set("view engine", "ejs");
 
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 
 //serve up static files
 app.use(express.static("public"));
@@ -31,7 +36,7 @@ app.get("/", function(req, res) {
   //do all the computing and logic first and
   //then only pass over the result of that logic
   res.render("list", {
-    kindOfDay: day,
+    listTitle: day,
     newListItems: items
   });
 });
@@ -40,10 +45,29 @@ app.post("/", function(req, res) {
 
   let item = req.body.newItem;
 
-  items.push(item);
+  //if statement to push items to the right array
+  if (req.body.list === "Work") {
+    workItems.push(item);
+    res.redirect("/work");
+  } else {
+    items.push(item);
+    res.redirect("/");
+  }
 
-  res.redirect("/");
+});
 
+//add another route targeting /work
+app.get("/work", function(reg, res) {
+  res.render("list", {
+    listTitle: "Work List",
+    newListItems: workItems
+  });
+});
+
+app.post("/work", function(req, res) {
+  let item = req.body.newItem;
+  workItem.push(item);
+  res.redirect("work");
 });
 
 app.listen(3000, function() {

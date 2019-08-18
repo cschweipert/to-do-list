@@ -11,7 +11,7 @@
 
   <div class="box" id="heading">
     <h1>
-      <%= kindOfDay %>
+      <%= listTitle %>
     </h1>
   </div>
 
@@ -29,7 +29,8 @@
 
     <form class="item" action="/" method="post">
       <input type="text" name="newItem" placeholder="New Item" autocomplate="off">
-      <button type="submit" name="button">+</button>
+<!-- add a dynamic value to the button to change between lists -->
+      <button type="submit" name="list" value=<%= listTitle %>>+</button>
     </form>
 
   </div>
