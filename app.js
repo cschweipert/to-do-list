@@ -5,25 +5,28 @@ const bodyParser = require("body-parser");
 
 const app = express();
 
-var items = ["Ride Bike", "Program", "Make Dinner"];
+let items = ["Ride Bike", "Program", "Make Dinner"];
 
 app.set("view engine", "ejs");
 
 app.use(bodyParser.urlencoded({extended: true}));
 
+//serve up static files
+app.use(express.static("public"));
+
 app.get("/", function(req, res) {
 
-  var today = new Date(); //plain JS
+  let today = new Date(); //plain JS
 
   //options object to display the day in a specific format
-  var options = {
+  let options = {
     weekday: "long",
     day: "numeric",
     month: "long"
   };
 
   //get local date and format it with the option object
-  var day = today.toLocaleDateString("en-US", options);
+  let day = today.toLocaleDateString("en-US", options);
 
   //do all the computing and logic first and
   //then only pass over the result of that logic
@@ -35,7 +38,7 @@ app.get("/", function(req, res) {
 
 app.post("/", function(req, res) {
 
-  var item = req.body.newItem;
+  let item = req.body.newItem;
 
   items.push(item);
 
