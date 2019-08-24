@@ -72,7 +72,17 @@ app.post("/", function(req, res) {
   item.save();
 
   res.redirect("/");
+});
 
+app.post("/delete", function(req, res) {
+  const checkedItemId = req.body.checkbox;
+
+  Item.findByIdAndRemove(checkedItemId, function(err){
+    if (!err) {
+      console.log("Successfully deleted checked item.");
+      res.redirect("/"); //to show on webpage
+    }
+  });
 });
 
 //add another route targeting /work
