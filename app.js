@@ -39,6 +39,13 @@ const Item3 = new Item({
 
 const defaultItems = [Item1, Item2, Item3];
 
+const listSchema = {
+  name: String,
+  items: [itemsSchema]
+};
+
+const List = mongoose.model("List", listSchema);
+
 app.get("/", function(req, res) {
 
   Item.find({}, function(err, foundItems) {
@@ -51,7 +58,7 @@ app.get("/", function(req, res) {
           console.log("Successfully saved default items to DB.");
         }
       });
-      res.redirect("/");  //shortcut to render defaultItems
+      res.redirect("/"); //shortcut to render defaultItems
     } else {
       res.render("list", {
         listTitle: "Today",
@@ -61,13 +68,55 @@ app.get("/", function(req, res) {
   });
 });
 
+app.get("/:customListName", function(req, res) {
+  const customListName = req.params.customListName;
+
+  //does a custom List with this name already exist?
+  List.findOne({
+    name: customListName
+  }, function(err, foundList) {
+    if (!err) {
+      if (!foundList) {
+        //create a new list
+        const list = new List({
+          name: customListName,
+          items: defaultItems
+        });
+        list.save();
+        res.redirect("/" + customListName);
+      } else {
+        //Show an existing list
+        res.render("List", {
+          listTitle: foundList.name,
+          newListItems: foundList.items
+        });
+      }
+    }
+  });
+
+
+
+});
+
 app.post("/", function(req, res) {
 
   const itemName = req.body.newItem;
+  const listName = req.body.list;
 
   const item = new Item({
     name: itemName
   });
+
+  if (listName === "Today"){
+    item.save();
+    res.redirect("/");
+  } else {
+    List.findOne({name: listName}, function(err, foundList){
+      foundList.items.push(item);
+      foundList.save();
+      res.redirect("/" + listName);
+    });
+  }
 
   item.save();
 
@@ -77,7 +126,7 @@ app.post("/", function(req, res) {
 app.post("/delete", function(req, res) {
   const checkedItemId = req.body.checkbox;
 
-  Item.findByIdAndRemove(checkedItemId, function(err){
+  Item.findByIdAndRemove(checkedItemId, function(err) {
     if (!err) {
       console.log("Successfully deleted checked item.");
       res.redirect("/"); //to show on webpage
@@ -86,12 +135,12 @@ app.post("/delete", function(req, res) {
 });
 
 //add another route targeting /work
-app.get("/work", function(reg, res) {
-  res.render("list", {
-    listTitle: "Work List",
-    newListItems: workItems
-  });
-});
+// app.get("/work", function(reg, res) {
+//   res.render("list", {
+//     listTitle: "Work List",
+//     newListItems: workItems
+//   });
+// });
 
 app.post("/work", function(req, res) {
   let item = req.body.newItem;
