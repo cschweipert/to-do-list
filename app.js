@@ -107,11 +107,13 @@ app.post("/", function(req, res) {
     name: itemName
   });
 
-  if (listName === "Today"){
+  if (listName === "Today") {
     item.save();
     res.redirect("/");
   } else {
-    List.findOne({name: listName}, function(err, foundList){
+    List.findOne({
+      name: listName
+    }, function(err, foundList) {
       foundList.items.push(item);
       foundList.save();
       res.redirect("/" + listName);
@@ -125,13 +127,32 @@ app.post("/", function(req, res) {
 
 app.post("/delete", function(req, res) {
   const checkedItemId = req.body.checkbox;
+  const listName = req.body.listName;
 
-  Item.findByIdAndRemove(checkedItemId, function(err) {
+  if (listName === "Today") {
+    Item.findByIdAndRemove(checkedItemId, function(err) {
+      if (!err) {
+        console.log("Successfully deleted checked item.");
+        res.redirect("/"); //to show on webpage
+      }
+    });
+  } else {
+    List.findOneAndUpdate({
+      name: listName
+    }, {
+      $pull: {
+        items: {
+          _id: checkedItemId
+        }
+      }
+    }, function(err, foundList) {
+
     if (!err) {
-      console.log("Successfully deleted checked item.");
-      res.redirect("/"); //to show on webpage
+      res.redirect("/" + listName);
     }
   });
+}
+
 });
 
 //add another route targeting /work
