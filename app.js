@@ -50,7 +50,6 @@ const List = mongoose.model("List", listSchema);
 app.get("/", function(req, res) {
 
   Item.find({}, function(err, foundItems) {
-
     if (foundItems.length === 0) {
       Item.insertMany(defaultItems, function(err) {
         if (err) {
@@ -72,7 +71,7 @@ app.get("/", function(req, res) {
 app.get("/:customListName", function(req, res) {
   const customListName = _.capitalize(req.params.customListName);
 
-  //does a custom List with this name already exist?
+  //does a custom list with this name already exist?
   List.findOne({
     name: customListName
   }, function(err, foundList) {
@@ -94,9 +93,6 @@ app.get("/:customListName", function(req, res) {
       }
     }
   });
-
-
-
 });
 
 app.post("/", function(req, res) {
@@ -134,7 +130,7 @@ app.post("/delete", function(req, res) {
     Item.findByIdAndRemove(checkedItemId, function(err) {
       if (!err) {
         console.log("Successfully deleted checked item.");
-        res.redirect("/"); //to show on webpage
+        res.redirect("/"); //to redirect to home-route and show webpage
       }
     });
   } else {
